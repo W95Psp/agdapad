@@ -5,7 +5,6 @@
 
 let
   agdapad-package = pkgs.callPackage ./package.nix {};
-  slimAgda = pkgs.callPackage ./slim-agda.nix {};
 in {
   imports = [
     <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
@@ -38,7 +37,7 @@ in {
   environment.systemPackages = with pkgs; [
     bash vim firefoxWrapper sshfs git screen socat
     (emacsWithPackages (epkgs: [ epkgs.evil epkgs.tramp-theme epkgs.ahungry-theme ]))
-    (slimAgda)
+    pkgs.fstar
   ];
 
   fonts.fonts = with pkgs; [ ubuntu_font_family ];

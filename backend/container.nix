@@ -15,9 +15,15 @@ let
       sed -i -e 's/showbar\s*=\s*1/showbar = 0/' config.def.h
     '';
   });
-  myemacs = pkgs.emacs.pkgs.withPackages (epkgs: [ epkgs.polymode epkgs.markdown-mode epkgs.evil epkgs.tramp-theme epkgs.ahungry-theme epkgs.color-theme-sanityinc-tomorrow ]);
-  myemacs-nox = pkgs.emacs-nox.pkgs.withPackages (epkgs: [ epkgs.evil epkgs.tramp-theme epkgs.ahungry-theme epkgs.color-theme-sanityinc-tomorrow ]);
-  myagda = pkgs.agda.withPackages (p: [ p.standard-library p.cubical p.agda-categories ]);
+  myemacs = pkgs.emacs.pkgs.withPackages
+    (epkgs: [
+      epkgs.markdown-mode epkgs.evil
+      epkgs.fstar-mode epkgs.tramp-theme epkgs.ahungry-theme
+      epkgs.color-theme-sanityinc-tomorrow
+    ]);
+  myemacs-nox = pkgs.emacs-nox.pkgs.withPackages (epkgs: [ epkgs.evil epkgs.tramp-theme epkgs.fstar-mode epkgs.ahungry-theme epkgs.color-theme-sanityinc-tomorrow ]);
+  myfstar = pkgs.fstar;
+  myz3 = pkgs.z3-fstar;
 in {
   services.journald.extraConfig = ''
     Storage=volatile
@@ -109,7 +115,7 @@ in {
   };
 
   services.openssh.enable = true;
-  services.openssh.settings.PermitRootLogin = "yes";
+  services.openssh.permitRootLogin = "yes";
 
   users.users.guest = { isNormalUser = true; description = "Guest"; home = "/home/guest"; uid = 10000; };
 
@@ -198,6 +204,21 @@ in {
   # required so nginx can serve /~foo/bar.agda
   systemd.services.nginx.serviceConfig.ProtectHome = "no";
 
+  # systemd.tmpfiles.rules = [
+  #   "C /home/.skeleton - - - - ${./skeleton-home}"
+  # ];
+  systemd.services.setup-skeleton = {
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.writeScript ''setup-skeleton'' ''
+        #! ${pkgs.stdenv.shell}
+        cp -R --no-preserve=mode ${./skeleton-home} /home/.skeleton
+        chown -R guest:users /home/.skeleton
+      ''}";
+    };
+    wantedBy = [ "default.target" ];
+  };
+
   containers.xskeleton = {
     config =
       { config, pkgs, ... }:
@@ -215,7 +236,7 @@ in {
         hardware.pulseaudio.enable = true;
 
         environment.systemPackages = with pkgs; [
-          tigervnc myemacs myagda screenkey st mydwm netcat xosd
+          tigervnc myemacs myfstar myz3 screenkey st mydwm netcat xosd
         ];
 
         fonts.fontconfig.enable = true;
@@ -274,7 +295,7 @@ in {
         networking.firewall.enable = false;
 
         environment.systemPackages = with pkgs; [
-          bash perl tmux vim myemacs-nox myagda
+          bash perl tmux vim myemacs-nox myfstar myz3
         ];
 
         programs.bash.enableCompletion = false;

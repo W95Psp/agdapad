@@ -33,5 +33,5 @@ if [ "${AGDAPAD_SESSION_NAME:0:5}" = "full-" ]; then
   exec xfce4-session
 else
   dwm &
-  exec emacs --fullscreen hello.agda
+  exec emacs --fullscreen hello.fst
 fi

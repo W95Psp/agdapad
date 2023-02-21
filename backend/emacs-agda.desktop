@@ -2,7 +2,7 @@
 Type=Application
 Name=emacs-agda
 Comment=
-Exec=emacs hello.agda
+Exec=emacs hello.fst
 StartupNotify=false
 Terminal=false
 Hidden=false

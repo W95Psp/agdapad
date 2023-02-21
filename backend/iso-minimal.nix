@@ -5,7 +5,7 @@
 
 let
   agdapad-package = pkgs.callPackage ./package.nix {};
-  slimAgda = pkgs.callPackage ./slim-agda.nix {};
+  # slimAgda = pkgs.callPackage ./slim-agda.nix {};
 in {
   imports = [
     <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
@@ -34,8 +34,8 @@ in {
 
   environment.systemPackages = with pkgs; [
     bash vim sshfs git screen socat
-    (emacsWithPackages (epkgs: [ epkgs.evil epkgs.tramp-theme epkgs.ahungry-theme ]))
-    (slimAgda)
+    (emacsWithPackages (epkgs: [ epkgs.evil epkgs.tramp-theme epkgs.ahungry-theme fstar ]))
+    pkgs.fstar
   ];
 
   fonts.fonts = with pkgs; [ ubuntu_font_family ];
@@ -46,7 +46,8 @@ in {
     createHome = true;
     home = "/home/ada";
     uid = 1000;
-    initialHashedPassword = "$6$utLZPDNys$nxpqRBobo7NAi9kFs7J8Ar5UN2zJY97.tuavJyk1ACyVoELeUwS3AtU7eCPq.R3Yxtb3GvmpuOuH0xrww0pdp.";
+    password = "demo";
+    # initialHashedPassword = "$6$utLZPDNys$nxpqRBobo7NAi9kFs7J8Ar5UN2zJY97.tuavJyk1ACyVoELeUwS3AtU7eCPq.R3Yxtb3GvmpuOuH0xrww0pdp.";
   };
 
   boot.postBootCommands = ''
