@@ -4,12 +4,13 @@
     fstar.url   = "github:fstarlang/fstar";
   };
   
-  outputs = { self, nixpkgs, fstar }: {
+  outputs = { self, nixpkgs, fstar }: rec {
 
-    nixosConfigurations.container = nixpkgs.lib.nixosSystem rec {
-      system = "x86_64-linux";
-      modules = [
-        {
+    nixosModules =
+      let
+        system = "x86_64-linux";
+      in rec {
+        fstar-overlay = {
           nixpkgs.overlays = [(self: super:
             {
               fstar = fstar.packages.${system}.fstar;
@@ -17,8 +18,18 @@
             }
           )];
           system.stateVersion = "22.11";
-        }
-        ./backend/container.nix
+        };
+        container = ./backend/container.nix;
+        default = {
+          imports = [fstar-overlay container];
+        };
+      }; 
+    
+    nixosConfigurations.container = nixpkgs.lib.nixosSystem rec {
+      system = "x86_64-linux";
+      modules = [
+        nixosModules.fstar-overlay
+        nixosModules.container
       ];
     };
 
