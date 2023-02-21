@@ -83,7 +83,7 @@ in {
       MemoryMax = "3G";
       ExecStart = "${myttyd}/bin/ttyd -b /__tty -a ${agdapad-package}/ttyprovisor.pl";
     };
-    path = with pkgs; [ bash perl systemd util-linux coreutils shadow.su tmux myemacs-nox ];
+    path = with pkgs; [ bash perl systemd util-linux coreutils shadow.su tmux myemacs-nox];
   };
 
   systemd.services.ttyprovisor-maint = {

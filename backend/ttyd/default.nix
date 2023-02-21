@@ -13,8 +13,8 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "tsl0922";
     repo = pname;
-    rev = "3e37e33b1cd927ae8f25cfbcf0da268723b6d230";
-    sha256 = "03kb03pnhc2zf7jxs4d1vkb54sr9v2x6fjj8nvs17dvs2smrg5ji";
+    rev = "e4ddf2c9fc6a737a6c9a75edda937ac0d5e01b82";
+    sha256 = "sha256-M+52Y0h6nFnBw954b5NXq1v43pN2dVBB1ICUFxHyfug=";
   };
 
   nativeBuildInputs = [ pkg-config cmake xxd yarn nodejs-slim python3 ];
@@ -25,30 +25,30 @@ stdenv.mkDerivation rec {
   # generate it ourselves. We do this not only to keep everything honest, but
   # also to facilitate easy overriding/patching of this package. Changes to the
   # html/ subdirectory wouldn't have any effect without regenerating src/html.h.
-  preBuild =
-    let
-      yarnNixFile = runCommand "yarn.nix" {}
-        "${yarn2nix}/bin/yarn2nix --lockfile ${src}/html/yarn.lock --no-patch --builtin-fetchgit > $out";
-      yarnNix = callPackage yarnNixFile {};
-      offline_cache = yarnNix.offline_cache;
-    in ''
-      (
-        cd ../html
-        export HOME=$PWD/yarn_home
+  # preBuild =
+  #   let
+  #     yarnNixFile = runCommand "yarn.nix" {}
+  #       "${yarn2nix}/bin/yarn2nix --lockfile ${src}/html/yarn.lock --no-patch --builtin-fetchgit > $out";
+  #     yarnNix = callPackage yarnNixFile {};
+  #     offline_cache = yarnNix.offline_cache;
+  #   in ''
+  #     (
+  #       cd ../html
+  #       export HOME=$PWD/yarn_home
 
-        yarn config --offline set yarn-offline-mirror ${offline_cache}
-        ${fixup_yarn_lock}/bin/fixup_yarn_lock yarn.lock
+  #       yarn config --offline set yarn-offline-mirror ${offline_cache}
+  #       ${fixup_yarn_lock}/bin/fixup_yarn_lock yarn.lock
 
-        export npm_config_nodedir=${nodejs-slim}
-        yarn install --offline --no-progress
+  #       export npm_config_nodedir=${nodejs-slim}
+  #       yarn install --offline --no-progress
 
-        # `yarn build` executes ./node_modules/bin/webpack, which is a symlink
-        # to ./node_modules/webpack/bin/webpack.js, which starts with the usual
-        # `/usr/bin/env`, which doesn't exist in the sandbox.
-        patchShebangs node_modules
-        yarn build --offline
-      )
-    '';
+  #       # `yarn build` executes ./node_modules/bin/webpack, which is a symlink
+  #       # to ./node_modules/webpack/bin/webpack.js, which starts with the usual
+  #       # `/usr/bin/env`, which doesn't exist in the sandbox.
+  #       patchShebangs node_modules
+  #       yarn build --offline
+  #     )
+  #   '';
 
   outputs = [ "out" "man" ];
 

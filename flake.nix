@@ -19,17 +19,17 @@
           )];
           system.stateVersion = "22.11";
         };
-        container = ./backend/container.nix;
+        container = import ./backend/container.nix;
         default = {
           imports = [fstar-overlay container];
+          # imports = [fstar-overlay container];
         };
       }; 
     
     nixosConfigurations.container = nixpkgs.lib.nixosSystem rec {
       system = "x86_64-linux";
       modules = [
-        nixosModules.fstar-overlay
-        nixosModules.container
+        nixosModules.default
       ];
     };
 

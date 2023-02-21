@@ -41,7 +41,7 @@ sub create_session {
 
   system("
     set -e
-    cd /etc/nixos-containers
+    cd /etc/containers
     if mkdir /home/$session 2>/dev/null; then
       cp -Ta --reflink=auto /home/.skeleton /home/$session
       mkdir -p /home/$session/.session-name/$session
